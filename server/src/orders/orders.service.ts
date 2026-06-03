@@ -15,6 +15,25 @@ export interface Order {
   garments: Garment[];
 }
 
+
+export interface OrderSummary {
+  orderId: string;
+  customerName: string;
+  totalGarments: number;
+  counts: Record<GarmentStatus, number>;
+  isFullyDelivered: boolean;
+}
+
+
+
+
+export const VALID_STATUSES: GarmentStatus[] = [
+  'received',
+  'in_cleaning',
+  'ready',
+  'delivered',
+];
+
 // In-memory mock data to simulate a POS-like workflow
 const ORDERS: Order[] = [
   {
@@ -47,4 +66,53 @@ export class OrdersService {
   }
 
   // NOTE: You will add more methods here in the implementation tasks.
+
+   updateGarmentStatus(
+      orderId: string,
+      garmentId: string,
+      newStatus: string,
+    ): Garment | 'ORDER_NOT_FOUND' | 'GARMENT_NOT_FOUND' | 'INVALID_STATUS' {
+      if (!VALID_STATUSES.includes(newStatus as GarmentStatus)) {
+        return 'INVALID_STATUS';
+      }
+  
+      const order = ORDERS.find((o) => o.id === orderId);
+      if (!order) {
+        return 'ORDER_NOT_FOUND';
+      }
+  
+      const garment = order.garments.find((g) => g.id === garmentId);
+      if (!garment) {
+        return 'GARMENT_NOT_FOUND';
+      }
+  
+      garment.status = newStatus as GarmentStatus;
+      return garment;
+    }
+
+    getOrderSummary(orderId: string): OrderSummary | undefined {
+        const order = ORDERS.find((o) => o.id === orderId);
+        if (!order) return undefined;
+    
+        const counts: Record<GarmentStatus, number> = {
+          received: 0,
+          in_cleaning: 0,
+          ready: 0,
+          delivered: 0,
+        };
+    
+        for (const garment of order.garments) {
+          counts[garment.status]++;
+        }
+    
+        return {
+          orderId: order.id,
+          customerName: order.customerName,
+          totalGarments: order.garments.length,
+          counts,
+          isFullyDelivered:
+            order.garments.length > 0 &&
+            order.garments.every((g) => g.status === 'delivered'),
+        };
+      }
 }
