@@ -115,4 +115,17 @@ export class OrdersService {
             order.garments.every((g) => g.status === 'delivered'),
         };
       }
+
+
+      getGarmentStatusSummary(): { [status: string]: number } {
+    const result: { [status: string]: number } = {};
+
+    for (const order of ORDERS) {
+      for (const garment of order.garments) {
+        result[garment.status] = (result[garment.status] || 0) + 1;
+      }
+    }
+
+    return result; 
+  }
 }

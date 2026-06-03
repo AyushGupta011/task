@@ -23,6 +23,11 @@ export class OrdersController {
     return order;
   }
 
+    @Get('summary')
+  getGarmentStatusSummary(): { [status: string]: number } {
+    return this.ordersService.getGarmentStatusSummary();
+  }
+
     @Get(':id/summary')
   getOrderSummary(@Param('id') id: string): OrderSummary {
     const summary = this.ordersService.getOrderSummary(id);
