@@ -14,6 +14,12 @@ export class OrdersController {
     return this.ordersService.findAll();
   }
 
+  
+    @Get('summary')
+  getGarmentStatusSummary(): { [status: string]: number } {
+    return this.ordersService.getGarmentStatusSummary();
+  }
+
   @Get(':id')
   getOrder(@Param('id') id: string): Order | { error: string } {
     const order = this.ordersService.findOne(id);
@@ -23,10 +29,6 @@ export class OrdersController {
     return order;
   }
 
-    @Get('summary')
-  getGarmentStatusSummary(): { [status: string]: number } {
-    return this.ordersService.getGarmentStatusSummary();
-  }
 
     @Get(':id/summary')
   getOrderSummary(@Param('id') id: string): OrderSummary {
